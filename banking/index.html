@@ -31,7 +31,9 @@
     frappe.boot = JSON.parse({{ boot }});
     frappe.boot.layout_direction = "{{ layout_direction }}";
 
-    frappe._translations_loaded = fetch(
+    // Frappe v16 sends the translations with the boot; newer versions load them separately
+    frappe._messages = frappe.boot.__messages;
+    frappe._translations_loaded = frappe._messages ? Promise.resolve() : fetch(
       `/api/method/frappe.translate.get_boot_translations?v=${frappe.boot.translations_version}&lang=${frappe.boot.lang}`,
       {
         credentials: "same-origin",

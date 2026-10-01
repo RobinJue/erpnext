@@ -32,11 +32,15 @@ if (import.meta.env.DEV) {
 } else {
   //@ts-expect-error - frappe will be available
   frappe.model.sync(frappe.boot.docs);
-  createRoot(document.getElementById('root') as HTMLElement).render(
-    <StrictMode>
-      <DirectionProvider dir={window.frappe?.boot?.layout_direction ?? 'ltr'}>
-        <App />
-      </DirectionProvider>
-    </StrictMode>,
-  )
+  // Render once the translations requested in index.html are in, so _() finds them on the first render
+  //@ts-expect-error - frappe will be available
+  Promise.resolve(frappe._translations_loaded).finally(() => {
+    createRoot(document.getElementById('root') as HTMLElement).render(
+      <StrictMode>
+        <DirectionProvider dir={window.frappe?.boot?.layout_direction ?? 'ltr'}>
+          <App />
+        </DirectionProvider>
+      </StrictMode>,
+    )
+  })
 }
